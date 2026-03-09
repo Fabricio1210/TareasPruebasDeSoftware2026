@@ -4,8 +4,8 @@
 White-box unit testing examples.
 """
 import unittest
-
-from WhiteBoxExecises import check_number_status, validate_password, calculate_total_discount, calculate_order_total, calculate_items_shipping_cost, validate_login, verify_age, categorize_product, validate_email, celsius_to_fahrenheit, validate_credit_card, validate_date, check_flight_eligibility, validate_url, calculate_quantity_discount, check_file_size, check_loan_eligibility, calculate_shipping_cost, grade_quiz, authenticate_user, get_weather_advisory, VendingMachine, TrafficLight, UserAuthentication, DocumentEditingSystem, ElevatorSystem
+from unittest.mock import patch, MagicMock
+from WhiteBoxExecises import check_number_status, validate_password, calculate_total_discount, calculate_order_total, calculate_items_shipping_cost, validate_login, verify_age, categorize_product, validate_email, celsius_to_fahrenheit, validate_credit_card, validate_date, check_flight_eligibility, validate_url, calculate_quantity_discount, check_file_size, check_loan_eligibility, calculate_shipping_cost, grade_quiz, authenticate_user, get_weather_advisory, VendingMachine, TrafficLight, UserAuthentication, DocumentEditingSystem, ElevatorSystem, BankingSystem, BankAccount, ShoppingCart, Product
 
 
 class TestWhiteBox(unittest.TestCase):
@@ -1132,6 +1132,132 @@ class TestWhiteBoxElevatorSystem(unittest.TestCase):
         """
         self.assertEqual(self.elevator_system.stop(), "Invalid operation in current state")
         self.assertEqual(self.elevator_system.state, "Idle")
+
+class TestBankingSystem(unittest.TestCase):
+    """
+    Banking system unit tests.
+    """
+
+    def setUp(self):
+        """
+        Set up a instance of a document elevator system.
+        """
+        self.system = BankingSystem()
+    
+    @patch("builtins.print")
+    def test_auth_with_wrong_user(self, mock_print):
+        """Verify the authentification if the user is wrong"""
+        user = "Hola123"
+        password = "12345"
+        resultado = self.system.authenticate(user, password)
+        self.assertFalse(resultado)
+        mock_print.assert_called_with("Authentication failed.")
+
+    @patch("builtins.print")
+    def test_auth_already_logged_in(self, mock_print):
+        """Verify if is possible to login when is already logged"""
+        user, password = "user123", "pass123"
+        self.system.authenticate(user, password)
+        resultado = self.system.authenticate(user, password)
+        self.assertFalse(resultado)
+        mock_print.assert_called_with("User already logged in.")
+
+    @patch("builtins.print")
+    def test_transfer_regular_with_insufficient_funds(self, mock_print):
+        """Verify if we can transfer money wihout enough funds"""
+        self.system.authenticate("user123", "pass123")
+        ammount = 981
+        transaction_type = "regular"
+        resultado = self.system.transfer_money("user123", "destino", ammount, transaction_type)
+        self.assertFalse(resultado)
+        mock_print.assert_called_with("Insufficient funds.")
+
+    @patch("builtins.print")
+    def test_transfer_express_success(self, mock_print):
+        self.system.authenticate("user123", "pass123")
+        """verify if we can do it a complete transaction with a express type"""
+        ammount = 100
+        transaction_type = "express"
+        resultado = self.system.transfer_money("user123", "destino", ammount, transaction_type)
+        self.assertTrue(resultado)
+        mensaje_esperado = (
+            f"Money transfer of ${ammount} ({transaction_type} transfer) "
+            f"from user123 to destino processed successfully."
+        )
+        mock_print.assert_called_with(mensaje_esperado)
+
+    @patch("builtins.print")
+    def test_transfer_invalid_type_error(self, mock_print):
+        """Verify if the system allows another kind of types"""
+        self.system.authenticate("user123", "pass123")
+        resultado = self.system.transfer_money("user123", "destino", 50, "bitcoin")
+        self.assertFalse(resultado)
+        mock_print.assert_called_with("Invalid transaction type.")
+
+
+class TestShoppingCart(unittest.TestCase):
+    """
+    Shopping cart unit tests.
+    """
+
+    def setUp(self):
+        """
+        Set up a instance of the shopping cart.
+        """
+        self.cart = ShoppingCart()
+
+    def test_add_product_new(self):
+        """Verify adding a new product to the cart."""
+        mock_product = MagicMock()
+        mock_product.name = "Laptop"
+        self.cart.add_product(mock_product, 1)
+        self.assertEqual(len(self.cart.items), 1)
+        self.assertEqual(self.cart.items[0]["product"].name, "Laptop")
+
+    def test_add_product_increase_quantity(self):
+        """Verify that adding the same product increases the quantity."""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, 1)
+        self.cart.add_product(mock_product, 2)
+        self.assertEqual(len(self.cart.items), 1)
+        self.assertEqual(self.cart.items[0]["quantity"], 3)
+
+    def test_remove_product_partial(self):
+        """Verify removing part of the quantity of a product."""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, 5)
+        self.cart.remove_product(mock_product, 2)
+        self.assertEqual(self.cart.items[0]["quantity"], 3)
+
+    def test_remove_product_entirely(self):
+        """Verify removing a product entirely when quantity is equal or less."""
+        mock_product = MagicMock()
+        self.cart.add_product(mock_product, 1)
+        self.cart.remove_product(mock_product, 1)
+        self.assertEqual(len(self.cart.items), 0)
+
+    @patch("builtins.print")
+    def test_view_cart(self, mock_print):
+        """Verify the display of the cart content."""
+        mock_product = MagicMock()
+        mock_product.name = "Mouse"
+        mock_product.price = 20
+        self.cart.add_product(mock_product, 2)
+        self.cart.view_cart()
+        mock_print.assert_called_with("2 x Mouse - $40")
+
+    @patch("builtins.print")
+    def test_checkout(self, mock_print):
+        """Verify the total calculation and checkout message."""
+        prod1 = MagicMock()
+        prod1.price = 10
+        prod2 = MagicMock()
+        prod2.price = 50
+        self.cart.add_product(prod1, 2)
+        self.cart.add_product(prod2, 1)
+        self.cart.checkout()
+        mock_print.assert_any_call("Total: $70")
+        mock_print.assert_any_call("Checkout completed. Thank you for shopping!")
 
 if __name__ == '__main__':
     unittest.main()
