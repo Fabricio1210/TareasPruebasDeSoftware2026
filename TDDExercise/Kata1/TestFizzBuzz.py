@@ -9,3 +9,9 @@ class FizzBuzz(unittest.TestCase):
 
     def test_fizzbuzz_returns_same_instance(self):
         self.assertIsInstance(fizzbuzz(1), str)
+
+    def test_fizzbuzz_is_multiple_of_3(self):
+        self.assertEqual(fizzbuzz(9), "Fizz")
+
+    def test_fizzbuzz_is_not_multiple_of_3(self):
+        self.assertEqual(fizzbuzz(10), "10")
