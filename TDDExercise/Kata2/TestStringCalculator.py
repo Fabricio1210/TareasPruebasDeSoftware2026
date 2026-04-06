@@ -20,5 +20,9 @@ class TestStringCalculator(unittest.TestCase):
         self.assertEqual(add("1,2\n3"), 6)
     
     def test_add_with_newline_error(self):
-        with self.assertRaises(Exception):
-            add("1,2,\n3")
+        self.assertEqual(add("1,2,\n3"),6)
+    
+    def test_add_with_separator_at_the_final(self):
+        with self.assertRaises(ValueError):
+            add("1,2,\n3,4,")
+
