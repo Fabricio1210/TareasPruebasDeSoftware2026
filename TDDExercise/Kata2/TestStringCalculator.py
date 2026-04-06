@@ -12,3 +12,6 @@ class TestStringCalculator(unittest.TestCase):
 
     def test_add_two_numbers(self):
         self.assertEqual(add("1,2"), 3)
+    
+    def test_add_unknown_quantity_of_numbers(self):
+        self.assertEqual(add("1,2,3,4,5,6,7,8,9,10"), 55)

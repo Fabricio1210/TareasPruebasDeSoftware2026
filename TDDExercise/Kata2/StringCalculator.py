@@ -4,5 +4,3 @@ def add(cadena) -> int:
     for n in splitArray:
         result += int(n)
     return result
-
-print(add("1,2,3"))
