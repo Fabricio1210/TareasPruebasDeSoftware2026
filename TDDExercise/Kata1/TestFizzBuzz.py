@@ -21,3 +21,6 @@ class FizzBuzz(unittest.TestCase):
 
     def test_fizzbuzz_is_not_multiple_of_5(self):
         self.assertEqual(fizzbuzz(11), "11")
+    
+    def test_fizzbuzz_is_not_multiple_of_5_and_3(self):
+        self.assertEqual(fizzbuzz(30), "FizzBuzz")
