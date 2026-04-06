@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock
-from StringCalculator import Add
+from StringCalculator import add
 
 class TestStringCalculator(unittest.TestCase):
 
