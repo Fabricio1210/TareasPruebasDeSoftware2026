@@ -27,7 +27,7 @@ class TestStringCalculator(unittest.TestCase):
             add("1,2,\n3,4,")
 
     def test_add_with_delimiters_1(self):
-        self.assertEqual(add("//;\n1:3"), 4)
+        self.assertEqual(add("//;\n1;3"), 4)
 
     def test_add_with_delimters_2(self):
         self.assertEqual(add("//sep\n2sep5"), 7)
