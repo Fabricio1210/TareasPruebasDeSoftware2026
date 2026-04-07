@@ -11,6 +11,12 @@ class TestPasswordValidation(unittest.TestCase):
         mock_print.assert_called_once_with("Password must be at least 8 characters")
 
     @patch('builtins.print')
+    def test_password_does_not_have_at_least_two_numbers(self, mock_print):
+        result = passwordValidation("HolaComoEstas1")
+        self.assertFalse(result)
+        mock_print.assert_called_once_with("Password must contain at least 2 numbers")
+
+    @patch('builtins.print')
     def test_password_valid_no_message(self, mock_print):
         result = passwordValidation("123456789")
         self.assertTrue(result)
